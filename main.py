@@ -62,12 +62,15 @@ def cache_rain_tables(rain_tables, output_file=DEFAULT_CACHE_FILE):
 
 def load_cached_rain_tables(input_file=DEFAULT_CACHE_FILE):
     with open(input_file, 'r') as f:
-        rain_locations = json.loads(f.read(), object_hook=DateTimeDecoder.decode)
-        rain_locations = rain_locations[1]
+        rain_location_data = json.loads(f.read(), object_hook=DateTimeDecoder.decode)[1]
+        rain_locations = [value for key, value in rain_location_data.items()]
+
         for location in rain_locations:
             print(f"Name: {location['name']}")
-            print(f"Address: {location['location']}")
-            print(f"Count: {location['count']}")
+            print(f"Data Points: {location['count']}")
+            for data_point in location['rain_data'][:2]:
+                pass
+
 
 
 if not os.path.exists(DEFAULT_CACHE_FILE) and not os.path.isfile(DEFAULT_CACHE_FILE):
