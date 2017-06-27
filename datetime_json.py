@@ -20,7 +20,7 @@ class DateTimeDecoder:
             return obj
 
         if 'date_recorded' in obj.keys():
-            obj['date_recorded'] = datetime.fromtimestamp(obj['date_recorded'])
+            obj['date_recorded']['val'] = datetime.fromtimestamp(obj['date_recorded']['val'])
         else:
             raise Exception('Unknown {}'.format(date_recorded))
 
