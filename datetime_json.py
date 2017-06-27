@@ -13,7 +13,7 @@ class DateTimeEncoder(json.JSONEncoder):
 
 class DateTimeDecoder:
     @staticmethod
-    def datetime_decode(obj):
+    def decode(obj):
         date_recorded = obj.get('date_recorded')
 
         if not date_recorded:

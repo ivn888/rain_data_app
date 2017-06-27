@@ -1,13 +1,17 @@
+import os
 import json
 import requests
 
 from bs4 import BeautifulSoup
 from datetime_json import DateTimeEncoder, DateTimeDecoder
+from pprint import pprint
 
 from print_colors import wrap_color as pwc
 from rain_data_parser import RainDataLocation, parse_rain_data, get_header_info
 
+
 DEFAULT_CACHE_FILE = 'cache.json'
+SOURCE_URL = 'https://or.water.usgs.gov/non-usgs/bes/'
 
 def get_rain_urls(url):
     request_data = requests.get(url)
@@ -26,9 +30,6 @@ def crawl_rain_tables(links):
     rain_tables = dict()
 
     for link in links:
-        if len(rain_tables) == 1:
-            break
-
         print(f'{pwc("process", "Retrieving file ")}{pwc("attention", " @ ")}{pwc("happening", " " + link)}...')
 
         request_data = requests.get(link)
@@ -53,25 +54,25 @@ def crawl_rain_tables(links):
 
     return rain_tables
 
+
 def cache_rain_tables(rain_tables, output_file=DEFAULT_CACHE_FILE):
-    with open(output_file, 'w') as f:
+    with open(output_file, 'w+') as f:
         f.write(json.dumps(['rain_data_cache', rain_tables], cls=DateTimeEncoder))
 
 
 def load_cached_rain_tables(input_file=DEFAULT_CACHE_FILE):
     with open(input_file, 'r') as f:
-        print(json.loads(f.read(), object_hook=DateTimeDecoder.datetime_decode))
-        # json.loads(f.read(), object_hook=decode_hook)
+        pass
+        # pprint(json.loads(f.read(), object_hook=DateTimeDecoder.decode))
 
+if not os.path.exists(DEFAULT_CACHE_FILE) and not os.path.isfile(DEFAULT_CACHE_FILE):
+    rain_table_urls = get_rain_urls(SOURCE_URL)
+    print('-' * 50)
+    print(f'Retrieving .rain files from specified source... (eg. "{SOURCE_URL}")')
+    print('-' * 50 + '\n')
+    rain_tables = crawl_rain_tables(rain_table_urls)
+    cache_rain_tables(rain_tables)
 
-
-SOURCE_URL = 'https://or.water.usgs.gov/non-usgs/bes/'
-
-rain_table_urls = get_rain_urls(SOURCE_URL)
-print('-' * 50)
-print(f'Retrieving .rain files from specified source... (eg. "{SOURCE_URL}")')
-print('-' * 50 + '\n')
-rain_data = crawl_rain_tables(rain_table_urls)
 load_cached_rain_tables()
 
 # HOW TO STORE THIS DATA FOR USE LATER >>>> HINT: LOOK INTO CSVS

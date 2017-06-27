@@ -19,7 +19,7 @@ def parse_rain_data(rain_data):
 
     rain_data = remove_header(rain_data)
 
-    for data in rain_data[1:]:
+    for data in rain_data:
         clean_data = data.split()
         clean_data = [data.strip() for data in clean_data]
 
